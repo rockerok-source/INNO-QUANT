@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="미국 ETF 퀀트 스윙 트레이딩 대시보드">
+  <title>US ETF Quant Desk</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">PERSONAL QUANT WORKSTATION</div>
+      <h1>US ETF <span>QUANT DESK</span></h1>
+    </div>
+    <div class="header-actions">
+      <span id="dataStatus" class="status demo">DEMO DATA</span>
+      <button id="refreshBtn" class="button secondary">새로고침</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="notice" id="notice">
+      <strong>데모 모드</strong> — 현재 화면은 샘플 가격으로 계산한 시제품입니다. 실제 매매 판단에 사용하지 마세요.
+      실시간 데이터 연결은 별도 데이터 API/서버 설정 후 활성화됩니다.
+    </section>
+
+    <section class="controls panel">
+      <div class="control-group">
+        <label for="timeframe">분석 주기</label>
+        <select id="timeframe">
+          <option value="daily">일봉 스윙</option>
+          <option value="weekly">주봉 스윙</option>
+        </select>
+      </div>
+      <div class="control-group search-control">
+        <label for="searchInput">ETF 검색</label>
+        <input id="searchInput" type="search" placeholder="티커 또는 ETF 이름">
+      </div>
+      <div class="control-group">
+        <label for="signalFilter">신호 필터</label>
+        <select id="signalFilter">
+          <option value="ALL">전체</option>
+          <option value="BUY">매수 후보</option>
+          <option value="WATCH">관찰</option>
+          <option value="HOLD">보유/중립</option>
+          <option value="SELL">매도/회피</option>
+        </select>
+      </div>
+      <button id="exportBtn" class="button secondary export-button">CSV 내보내기</button>
+    </section>
+
+    <section class="metric-grid" id="metrics">
+      <article class="metric panel"><span>분석 ETF</span><strong id="countMetric">—</strong><small>현재 화면 기준</small></article>
+      <article class="metric panel"><span>매수 후보</span><strong id="buyMetric" class="positive">—</strong><small>퀀트 점수 기준</small></article>
+      <article class="metric panel"><span>관찰 종목</span><strong id="watchMetric">—</strong><small>추세 전환 확인</small></article>
+      <article class="metric panel"><span>시장 위험 온도</span><strong id="riskMetric">—</strong><small>샘플 시장 breadth</small></article>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="section-heading">
+        <div><div class="eyebrow">SCREENER</div><h2>ETF 퀀트 스크리너</h2></div>
+        <span class="muted" id="updatedAt">계산 대기</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>티커 / ETF</th><th>현재가</th><th>등락률</th><th>RSI</th><th>추세</th><th>수급</th><th>퀀트 점수</th><th>시그널</th>
+          </tr></thead>
+          <tbody id="etfTable"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="emptyState" hidden>조건에 맞는 ETF가 없습니다.</div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel detail-panel">
+        <div class="section-heading"><div><div class="eyebrow">SELECTED ASSET</div><h2 id="detailTitle">ETF를 선택하세요</h2></div><span id="detailSignal" class="pill neutral">대기</span></div>
+        <div class="detail-price"><strong id="detailPrice">—</strong><span id="detailChange">—</span></div>
+        <div class="score-track"><div id="scoreBar"></div></div>
+        <div class="score-caption"><span>퀀트 종합 점수</span><strong id="detailScore">—</strong></div>
+        <div class="factor-grid" id="factorGrid">
+          <div><span>RSI(14)</span><strong>—</strong></div><div><span>MACD</span><strong>—</strong></div>
+          <div><span>20/50일선</span><strong>—</strong></div><div><span>거래량 흐름</span><strong>—</strong></div>
+          <div><span>ATR(14)</span><strong>—</strong></div><div><span>모멘텀</span><strong>—</strong></div>
+        </div>
+        <p class="muted explanation" id="detailReason">목록에서 ETF를 선택하면 분석 근거가 표시됩니다.</p>
+      </article>
+
+      <article class="panel journal-panel">
+        <div class="section-heading"><div><div class="eyebrow">TRADE JOURNAL</div><h2>매매 기록</h2></div><span class="muted">이 기기에 저장</span></div>
+        <form id="tradeForm" class="trade-form">
+          <input id="tradeTicker" placeholder="티커 (예: QQQ)" required maxlength="12">
+          <select id="tradeSide"><option value="매수">매수</option><option value="매도">매도</option></select>
+          <input id="tradePrice" type="number" step="0.01" min="0" placeholder="가격" required>
+          <input id="tradeQty" type="number" step="any" min="0.0001" placeholder="수량" required>
+          <button class="button primary" type="submit">기록 추가</button>
+        </form>
+        <div class="journal-list" id="journalList"></div>
+      </article>
+    </section>
+    <footer>US ETF QUANT DESK · 분석 점수는 참고용 규칙 기반 지표이며 투자 조언 또는 수익 보장이 아닙니다.</footer>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>

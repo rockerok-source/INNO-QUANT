@@ -1,2 +1,64 @@
-# INNO-QUANT
-INNO QUANT - US Market Intelligence &amp; Quantitative Trading System
+# US ETF Quant Desk — GitHub Pages 스타터
+
+아이폰에서 사용할 수 있는 미국 ETF 퀀트 스윙 트레이딩 PWA의 첫 번째 버전입니다.
+
+## 현재 구현된 기능
+- 일봉 / 주봉 분석 모드
+- ETF 검색 및 신호 필터
+- 규칙 기반 퀀트 점수(0~100)
+- RSI(14), 이동평균 추세, MACD 방향, 거래량 변화, ATR%, 모멘텀
+- 매매 기록 추가/삭제 및 브라우저 로컬 저장
+- 스크리너 CSV 내보내기
+- PWA 설치 기본 파일 및 오프라인 캐시
+- 모바일 화면 대응
+
+## 중요: 데이터 관련 제한
+현재는 **데모 가격 데이터**로 동작합니다. 실시간 또는 지연 시세가 아닙니다.
+거래량 비교는 실제 기관/개인 순매수 데이터가 아니라 거래량 변화의 단순 대용치입니다.
+따라서 이 버전의 매수/매도 신호를 실제 주문에 사용하지 마세요.
+
+## GitHub에 업로드하는 방법
+1. GitHub에서 `TERRY_OH` 저장소를 엽니다.
+2. `Add file` → `Upload files`를 선택합니다.
+3. 압축을 푼 폴더 안의 파일 6개와 이 README를 저장소 최상위(root)에 업로드합니다.
+4. Commit changes를 누릅니다.
+5. 저장소 `Settings` → `Pages` → `Build and deployment`에서 `Deploy from a branch`를 선택합니다.
+6. Branch는 `main`, folder는 `/ (root)`로 설정하고 Save 합니다.
+7. 배포가 끝나면 `https://<GitHub사용자명>.github.io/TERRY_OH/` 형태의 주소로 접속합니다.
+
+## 실제 시세 API 연결 규격
+프론트엔드는 아래 주소를 호출하도록 준비되어 있습니다.
+
+`GET ./api/market-data?universe=core&interval=1d&range=1y`
+
+응답 예시:
+```json
+{
+  "mode": "live",
+  "asOf": "2026-11-28T00:00:00Z",
+  "assets": [
+    {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF",
+      "prices": [
+        {"date":"2026-01-02","open":580,"high":585,"low":578,"close":583,"volume":42000000}
+      ]
+    }
+  ]
+}
+```
+`prices`는 오래된 날짜부터 최신 날짜 순서로 정렬된 일봉 OHLCV 배열이어야 합니다.
+
+### 왜 별도 API 서버가 필요한가?
+GitHub Pages는 정적 호스팅이므로 API 키를 안전하게 숨기거나 서버 측 데이터 수집을 실행하기에 적합하지 않습니다. API 키를 `app.js`에 직접 넣지 마세요. 다음 단계에서 Cloudflare Workers/Pages Functions 또는 별도 백엔드에 데이터 공급자를 연결하고, 브라우저에는 정규화된 OHLCV만 전달하는 구조로 확장합니다.
+
+## 다음 개발 단계
+1. 실데이터 공급자 선정 및 서버 프록시 구성
+2. 미국 ETF 전체 종목 유니버스 자동 동기화
+3. 거래대금/순자금유입/기관 수급 등 데이터 소스별 신뢰도 표시
+4. 시장 레짐(금리·달러·변동성·신용스프레드) 분석
+5. 백테스트, 거래비용, 슬리피지, 성과 통계
+6. 매매 규칙 파라미터 최적화와 워크포워드 검증
+
+## 투자 유의
+본 프로젝트는 개인 학습 및 분석용 소프트웨어입니다. 투자 조언이 아니며, 점수와 시그널은 수익을 보장하지 않습니다.
